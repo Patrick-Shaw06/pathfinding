@@ -2,13 +2,21 @@ def isWall(distanceThreshold):
     return CutebotPro.ultrasonic(SonarUnit.CENTIMETERS) < distanceThreshold
 
 def turnLeft():
-    return
+    CutebotPro.color_light(CutebotProRGBLight.RGBL, 0xff0000)
+    CutebotPro.trolley_steering(CutebotProTurn.LEFT_IN_PLACE, 95)
+    CutebotPro.turn_off_all_headlights()
+    
 
 def turnRight():
-    return
+    CutebotPro.color_light(CutebotProRGBLight.RGBR, 0xff0000)
+    CutebotPro.trolley_steering(CutebotProTurn.RIGHT_IN_PLACE, 95)
+    CutebotPro.turn_off_all_headlights()
 
 def moveForward():
-    return
+    CutebotPro.color_light(CutebotProRGBLight.RGBA, 0x00ff00)
+    CutebotPro.pwm_cruise_control(40, 40)
+    CutebotPro.distance_running(CutebotProOrientation.ADVANCE, 30, CutebotProDistanceUnits.CM)
+    CutebotPro.turn_off_all_headlights()
 
 def navigateMaze(distanceThreshold, magnetThreshold):
     '''
@@ -34,7 +42,7 @@ def navigateMaze(distanceThreshold, magnetThreshold):
     '''
     moves = [] # List to store past moves
     # Navigate maze until magnet is found
-    while (input.magnetic_force(Dimension.X) < magnetThreshold):
+    while (abs(input.magnetic_force(Dimension.Y)) < magnetThreshold):
         # Check left direction first
         turnLeft()
         move = 1
@@ -44,7 +52,28 @@ def navigateMaze(distanceThreshold, magnetThreshold):
             move += 1 # Increment to track which direction is moved
         moveForward() # Move forward to next square
         moves.append(move) # Save direction moved to list
-    
+    basic.show_leds("""
+    # # # # #
+    # # # # #
+    # # # # #
+    # # # # #
+    # # # # #
+    """)
+
+    for i in range(len(moves)):
+        if moves[i] == 1:
+            music.play(music.tone_playable(Note.C, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
+            music.rest(music.beat(BeatFraction.HALF))
+        if moves[i] == 2:
+                    music.play(music.tone_playable(Note.E, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
+                    music.rest(music.beat(BeatFraction.HALF))
+        if moves[i] == 3:
+                    music.play(music.tone_playable(Note.G, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
+                    music.rest(music.beat(BeatFraction.HALF))
+        if moves[i] == 4:
+                    music.play(music.tone_playable(Note.C5, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
+                    music.rest(music.beat(BeatFraction.HALF))
+
     '''
     Step 2 - Calculating Optimized Path:
     The move list is optimized by removing moves that lead towards dead ends.
@@ -68,6 +97,22 @@ def navigateMaze(distanceThreshold, magnetThreshold):
             i = 0 # Length and index of list changes. I could calculate the new list but its easier to just start at the beginning again.
         i += 1 # Increment i to move on to next index
 
+    for i in range(len(moves)):
+        if moves[i] == 1:
+            music.play(music.tone_playable(Note.C, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
+            music.rest(music.beat(BeatFraction.HALF))
+        if moves[i] == 2:
+                    music.play(music.tone_playable(Note.E, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
+                    music.rest(music.beat(BeatFraction.HALF))
+        if moves[i] == 3:
+                    music.play(music.tone_playable(Note.G, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
+                    music.rest(music.beat(BeatFraction.HALF))
+        if moves[i] == 4:
+                    music.play(music.tone_playable(Note.C5, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
+                    music.rest(music.beat(BeatFraction.HALF))
+
+    music.rest(music.beat(BeatFraction.BREVE))
+
     '''
     Step 3 - Reversing Optimized Path
     Reversing the optimized path can be done by first reversing the order of
@@ -76,96 +121,71 @@ def navigateMaze(distanceThreshold, magnetThreshold):
     '''
     exitMoves = []
     for i in range(len(moves)):
+        # Take 4 minus the opposite element of moves
         exitMoves.append(4 - moves[len(moves) - i - 1])
+
+    for i in range(len(exitMoves)):
+        if exitMoves[i] == 1:
+            music.play(music.tone_playable(Note.C, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
+            music.rest(music.beat(BeatFraction.HALF))
+        if exitMoves[i] == 2:
+                    music.play(music.tone_playable(Note.E, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
+                    music.rest(music.beat(BeatFraction.HALF))
+        if exitMoves[i] == 3:
+                    music.play(music.tone_playable(Note.G, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
+                    music.rest(music.beat(BeatFraction.HALF))
+        if exitMoves[i] == 4:
+                    music.play(music.tone_playable(Note.C5, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
+                    music.rest(music.beat(BeatFraction.HALF))
 
     '''
     Step 4 - Exiting the Maze
     The bot can exit the maze by turning around, moving forwards, then
         simply following the list of exit moves.
     '''
-    # Exit maze
+    # Turn around and move forwards to next square
     turnRight()
     turnRight()
     moveForward()
+    # Follow list of moves to exit
     for i in range(len(exitMoves)):
+        # Only options are 1 (left), 2 (forwards), or 3 (right)
         if i == 1:
             turnLeft()
+            moveForward()
         elif i == 2:
             moveForward()
-        else: # Only options are 1, 2, or 3
+        else:
             turnRight()
+            moveForward()
+    # Move forward fully out of maze
     moveForward()
-
 
 def turnLeftTest():
     CutebotPro.pwm_cruise_control(-40, 40)
-    CutebotPro.angle_running(CutebotProWheel.ALL_WHEEL, 330, CutebotProAngleUnits.ANGLE)
+    CutebotPro.angle_running(CutebotProWheel.RIGHT_WHEEL, 330, CutebotProAngleUnits.ANGLE)
     # CutebotPro.trolley_steering(CutebotProTurn.LEFT_IN_PLACE, 90)
 
 def turnRightTest():
-    CutebotPro.pwm_cruise_control(40, -40)
-    CutebotPro.angle_running(CutebotProWheel.ALL_WHEEL, 330, CutebotProAngleUnits.ANGLE)
-    # CutebotPro.trolley_steering(CutebotProTurn.RIGHT_IN_PLACE, 90)
-
-def moveForwardTest():
-    CutebotPro.pwm_cruise_control(40, 40)
-    CutebotPro.distance_running(CutebotProOrientation.ADVANCE, 40, CutebotProDistanceUnits.CM)
-
-def moveBackwardsTest():
-    CutebotPro.pwm_cruise_control(-20, -20)
-    CutebotPro.distance_running(CutebotProOrientation.RETREAT, 40, CutebotProDistanceUnits.CM)
+    # CutebotPro.pwm_cruise_control(40, -40)
+    # CutebotPro.angle_running(CutebotProWheel.LEFT_WHEEL, 330, CutebotProAngleUnits.ANGLE)
+    CutebotPro.trolley_steering(CutebotProTurn.RIGHT_IN_PLACE, 95)
 
 def on_button_pressed_a():
     basic.show_leds("""
+    . . # . .
+    . # . # .
+    # . . . #
     # # # # #
     # . . . #
-    # . . . #
-    # . . . #
-    # # # # #
     """)
     basic.pause(1000)
-    basic.show_leds("""
-        . . # . .
-        . # . . .
-        # # # # #
-        . # . . .
-        . . # . .
-        """)
-    turnLeftTest()
-    basic.pause(1000)
-    basic.show_leds("""
-        . . # . .
-        . . . # .
-        # # # # #
-        . . . # .
-        . . # . .
-        """)
-    turnRightTest()
-    basic.pause(1000)
-    basic.show_leds("""
-        . . # . .
-        . # # # .
-        # . # . #
-        . . # . .
-        . . # . .
-        """)
-    moveForwardTest()
-    basic.pause(1000)
-    basic.show_leds("""
-        . . # . .
-        . . # . .
-        # . # . #
-        . # # # .
-        . . # . .
-        """)
-    moveBackwardsTest()
-    basic.pause(1000)
-    basic.show_leds("""
-        . . . . .
-        # . # . #
-        # # . # #
-        # . . . #
-        # # # # #
-        """)
+    basic.clear_screen()
+    for i in range(4):
+        turnLeftTest()
+
+def run():
+    navigateMaze(20, 300)
 
 input.on_button_pressed(Button.A, on_button_pressed_a)
+input.on_button_pressed(Button.B, run)

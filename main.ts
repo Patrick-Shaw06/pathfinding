@@ -1,20 +1,27 @@
-function isWall(distanceThreshold: any) {
+function isWall(distanceThreshold: number) {
     return CutebotPro.ultrasonic(SonarUnit.Centimeters) < distanceThreshold
 }
 
 function turnLeft() {
-    return
+    CutebotPro.colorLight(CutebotProRGBLight.RGBL, 0xff0000)
+    CutebotPro.trolleySteering(CutebotProTurn.LeftInPlace, 95)
+    CutebotPro.turnOffAllHeadlights()
 }
 
 function turnRight() {
-    return
+    CutebotPro.colorLight(CutebotProRGBLight.RGBR, 0xff0000)
+    CutebotPro.trolleySteering(CutebotProTurn.RightInPlace, 95)
+    CutebotPro.turnOffAllHeadlights()
 }
 
 function moveForward() {
-    return
+    CutebotPro.colorLight(CutebotProRGBLight.RGBA, 0x00ff00)
+    CutebotPro.pwmCruiseControl(40, 40)
+    CutebotPro.distanceRunning(CutebotProOrientation.Advance, 30, CutebotProDistanceUnits.Cm)
+    CutebotPro.turnOffAllHeadlights()
 }
 
-function navigateMaze(distanceThreshold: any, magnetThreshold: any) {
+function navigateMaze(distanceThreshold: number, magnetThreshold: number) {
     let move: number;
     let i: number;
     let j: number;
@@ -44,7 +51,7 @@ function navigateMaze(distanceThreshold: any, magnetThreshold: any) {
     let moves = []
     //  List to store past moves
     //  Navigate maze until magnet is found
-    while (input.magneticForce(Dimension.X) < magnetThreshold) {
+    while (Math.abs(input.magneticForce(Dimension.Y)) < magnetThreshold) {
         //  Check left direction first
         turnLeft()
         move = 1
@@ -59,6 +66,35 @@ function navigateMaze(distanceThreshold: any, magnetThreshold: any) {
         moves.push(move)
     }
     //  Save direction moved to list
+    basic.showLeds(`
+    # # # # #
+    # # # # #
+    # # # # #
+    # # # # #
+    # # # # #
+    `)
+    for (i = 0; i < moves.length; i++) {
+        if (moves[i] == 1) {
+            music.play(music.tonePlayable(Note.C, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
+            music.rest(music.beat(BeatFraction.Half))
+        }
+        
+        if (moves[i] == 2) {
+            music.play(music.tonePlayable(Note.E, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
+            music.rest(music.beat(BeatFraction.Half))
+        }
+        
+        if (moves[i] == 3) {
+            music.play(music.tonePlayable(Note.G, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
+            music.rest(music.beat(BeatFraction.Half))
+        }
+        
+        if (moves[i] == 4) {
+            music.play(music.tonePlayable(Note.C5, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
+            music.rest(music.beat(BeatFraction.Half))
+        }
+        
+    }
     /** 
     Step 2 - Calculating Optimized Path:
     The move list is optimized by removing moves that lead towards dead ends.
@@ -96,6 +132,29 @@ function navigateMaze(distanceThreshold: any, magnetThreshold: any) {
         i += 1
     }
     //  Increment i to move on to next index
+    for (i = 0; i < moves.length; i++) {
+        if (moves[i] == 1) {
+            music.play(music.tonePlayable(Note.C, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
+            music.rest(music.beat(BeatFraction.Half))
+        }
+        
+        if (moves[i] == 2) {
+            music.play(music.tonePlayable(Note.E, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
+            music.rest(music.beat(BeatFraction.Half))
+        }
+        
+        if (moves[i] == 3) {
+            music.play(music.tonePlayable(Note.G, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
+            music.rest(music.beat(BeatFraction.Half))
+        }
+        
+        if (moves[i] == 4) {
+            music.play(music.tonePlayable(Note.C5, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
+            music.rest(music.beat(BeatFraction.Half))
+        }
+        
+    }
+    music.rest(music.beat(BeatFraction.Breve))
     /** 
     Step 3 - Reversing Optimized Path
     Reversing the optimized path can be done by first reversing the order of
@@ -105,7 +164,30 @@ function navigateMaze(distanceThreshold: any, magnetThreshold: any) {
  */
     let exitMoves = []
     for (i = 0; i < moves.length; i++) {
+        //  Take 4 minus the opposite element of moves
         exitMoves.push(4 - moves[moves.length - i - 1])
+    }
+    for (i = 0; i < exitMoves.length; i++) {
+        if (exitMoves[i] == 1) {
+            music.play(music.tonePlayable(Note.C, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
+            music.rest(music.beat(BeatFraction.Half))
+        }
+        
+        if (exitMoves[i] == 2) {
+            music.play(music.tonePlayable(Note.E, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
+            music.rest(music.beat(BeatFraction.Half))
+        }
+        
+        if (exitMoves[i] == 3) {
+            music.play(music.tonePlayable(Note.G, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
+            music.rest(music.beat(BeatFraction.Half))
+        }
+        
+        if (exitMoves[i] == 4) {
+            music.play(music.tonePlayable(Note.C5, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
+            music.rest(music.beat(BeatFraction.Half))
+        }
+        
     }
     /** 
     Step 4 - Exiting the Maze
@@ -113,96 +195,54 @@ function navigateMaze(distanceThreshold: any, magnetThreshold: any) {
         simply following the list of exit moves.
     
  */
-    //  Exit maze
+    //  Turn around and move forwards to next square
     turnRight()
     turnRight()
     moveForward()
+    //  Follow list of moves to exit
     for (i = 0; i < exitMoves.length; i++) {
+        //  Only options are 1 (left), 2 (forwards), or 3 (right)
         if (i == 1) {
             turnLeft()
+            moveForward()
         } else if (i == 2) {
             moveForward()
         } else {
-            //  Only options are 1, 2, or 3
             turnRight()
+            moveForward()
         }
         
     }
+    //  Move forward fully out of maze
     moveForward()
 }
 
 function turnLeftTest() {
     CutebotPro.pwmCruiseControl(-40, 40)
-    CutebotPro.angleRunning(CutebotProWheel.AllWheel, 330, CutebotProAngleUnits.Angle)
+    CutebotPro.angleRunning(CutebotProWheel.RightWheel, 330, CutebotProAngleUnits.Angle)
 }
 
 //  CutebotPro.trolley_steering(CutebotProTurn.LEFT_IN_PLACE, 90)
 function turnRightTest() {
-    CutebotPro.pwmCruiseControl(40, -40)
-    CutebotPro.angleRunning(CutebotProWheel.AllWheel, 330, CutebotProAngleUnits.Angle)
-}
-
-//  CutebotPro.trolley_steering(CutebotProTurn.RIGHT_IN_PLACE, 90)
-function moveForwardTest() {
-    CutebotPro.pwmCruiseControl(40, 40)
-    CutebotPro.distanceRunning(CutebotProOrientation.Advance, 40, CutebotProDistanceUnits.Cm)
-}
-
-function moveBackwardsTest() {
-    CutebotPro.pwmCruiseControl(-20, -20)
-    CutebotPro.distanceRunning(CutebotProOrientation.Retreat, 40, CutebotProDistanceUnits.Cm)
+    //  CutebotPro.pwm_cruise_control(40, -40)
+    //  CutebotPro.angle_running(CutebotProWheel.LEFT_WHEEL, 330, CutebotProAngleUnits.ANGLE)
+    CutebotPro.trolleySteering(CutebotProTurn.RightInPlace, 95)
 }
 
 input.onButtonPressed(Button.A, function on_button_pressed_a() {
     basic.showLeds(`
+    . . # . .
+    . # . # .
+    # . . . #
     # # # # #
     # . . . #
-    # . . . #
-    # . . . #
-    # # # # #
     `)
     basic.pause(1000)
-    basic.showLeds(`
-        . . # . .
-        . # . . .
-        # # # # #
-        . # . . .
-        . . # . .
-        `)
-    turnLeftTest()
-    basic.pause(1000)
-    basic.showLeds(`
-        . . # . .
-        . . . # .
-        # # # # #
-        . . . # .
-        . . # . .
-        `)
-    turnRightTest()
-    basic.pause(1000)
-    basic.showLeds(`
-        . . # . .
-        . # # # .
-        # . # . #
-        . . # . .
-        . . # . .
-        `)
-    moveForwardTest()
-    basic.pause(1000)
-    basic.showLeds(`
-        . . # . .
-        . . # . .
-        # . # . #
-        . # # # .
-        . . # . .
-        `)
-    moveBackwardsTest()
-    basic.pause(1000)
-    basic.showLeds(`
-        . . . . .
-        # . # . #
-        # # . # #
-        # . . . #
-        # # # # #
-        `)
+    basic.clearScreen()
+    for (let i = 0; i < 4; i++) {
+        turnLeftTest()
+    }
+})
+input.onButtonPressed(Button.B, function run() {
+    navigateMaze(20, 300)
 })
