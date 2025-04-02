@@ -74,6 +74,8 @@ def navigateMaze(distanceThreshold, magnetThreshold):
                     music.play(music.tone_playable(Note.C5, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
                     music.rest(music.beat(BeatFraction.HALF))
 
+    music.rest(music.beat(BeatFraction.BREVE))
+
     '''
     Step 2 - Calculating Optimized Path:
     The move list is optimized by removing moves that lead towards dead ends.
@@ -150,12 +152,12 @@ def navigateMaze(distanceThreshold, magnetThreshold):
     # Follow list of moves to exit
     for i in range(len(exitMoves)):
         # Only options are 1 (left), 2 (forwards), or 3 (right)
-        if i == 1:
+        if exitMoves[i] == 1:
             turnLeft()
             moveForward()
-        elif i == 2:
+        elif exitMoves[i] == 2:
             moveForward()
-        else:
+        elif exitMoves[i] == 3:
             turnRight()
             moveForward()
     # Move forward fully out of maze

@@ -95,6 +95,7 @@ function navigateMaze(distanceThreshold: number, magnetThreshold: number) {
         }
         
     }
+    music.rest(music.beat(BeatFraction.Breve))
     /** 
     Step 2 - Calculating Optimized Path:
     The move list is optimized by removing moves that lead towards dead ends.
@@ -202,12 +203,12 @@ function navigateMaze(distanceThreshold: number, magnetThreshold: number) {
     //  Follow list of moves to exit
     for (i = 0; i < exitMoves.length; i++) {
         //  Only options are 1 (left), 2 (forwards), or 3 (right)
-        if (i == 1) {
+        if (exitMoves[i] == 1) {
             turnLeft()
             moveForward()
-        } else if (i == 2) {
+        } else if (exitMoves[i] == 2) {
             moveForward()
-        } else {
+        } else if (exitMoves[i] == 3) {
             turnRight()
             moveForward()
         }
