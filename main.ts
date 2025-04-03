@@ -17,7 +17,7 @@ function turnRight() {
 function moveForward() {
     CutebotPro.colorLight(CutebotProRGBLight.RGBA, 0x00ff00)
     CutebotPro.pwmCruiseControl(40, 40)
-    CutebotPro.distanceRunning(CutebotProOrientation.Advance, 30, CutebotProDistanceUnits.Cm)
+    CutebotPro.distanceRunning(CutebotProOrientation.Advance, 30.7, CutebotProDistanceUnits.Cm)
     CutebotPro.turnOffAllHeadlights()
 }
 
@@ -73,6 +73,8 @@ function navigateMaze(distanceThreshold: number, magnetThreshold: number) {
     # # # # #
     # # # # #
     `)
+    //  To show that the bomb has been found
+    //  Play tones representing path taken
     for (i = 0; i < moves.length; i++) {
         if (moves[i] == 1) {
             music.play(music.tonePlayable(Note.C, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
@@ -133,6 +135,7 @@ function navigateMaze(distanceThreshold: number, magnetThreshold: number) {
         i += 1
     }
     //  Increment i to move on to next index
+    //  Play tones representing optimal path to take
     for (i = 0; i < moves.length; i++) {
         if (moves[i] == 1) {
             music.play(music.tonePlayable(Note.C, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
@@ -168,6 +171,7 @@ function navigateMaze(distanceThreshold: number, magnetThreshold: number) {
         //  Take 4 minus the opposite element of moves
         exitMoves.push(4 - moves[moves.length - i - 1])
     }
+    //  Play tones representing path to exit
     for (i = 0; i < exitMoves.length; i++) {
         if (exitMoves[i] == 1) {
             music.play(music.tonePlayable(Note.C, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
@@ -214,8 +218,6 @@ function navigateMaze(distanceThreshold: number, magnetThreshold: number) {
         }
         
     }
-    //  Move forward fully out of maze
-    moveForward()
 }
 
 function turnLeftTest() {

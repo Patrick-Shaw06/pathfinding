@@ -15,7 +15,7 @@ def turnRight():
 def moveForward():
     CutebotPro.color_light(CutebotProRGBLight.RGBA, 0x00ff00)
     CutebotPro.pwm_cruise_control(40, 40)
-    CutebotPro.distance_running(CutebotProOrientation.ADVANCE, 30, CutebotProDistanceUnits.CM)
+    CutebotPro.distance_running(CutebotProOrientation.ADVANCE, 30.7, CutebotProDistanceUnits.CM)
     CutebotPro.turn_off_all_headlights()
 
 def navigateMaze(distanceThreshold, magnetThreshold):
@@ -58,8 +58,9 @@ def navigateMaze(distanceThreshold, magnetThreshold):
     # # # # #
     # # # # #
     # # # # #
-    """)
+    """) # To show that the bomb has been found
 
+    # Play tones representing path taken
     for i in range(len(moves)):
         if moves[i] == 1:
             music.play(music.tone_playable(Note.C, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
@@ -99,6 +100,7 @@ def navigateMaze(distanceThreshold, magnetThreshold):
             i = 0 # Length and index of list changes. I could calculate the new list but its easier to just start at the beginning again.
         i += 1 # Increment i to move on to next index
 
+    # Play tones representing optimal path to take
     for i in range(len(moves)):
         if moves[i] == 1:
             music.play(music.tone_playable(Note.C, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
@@ -126,6 +128,7 @@ def navigateMaze(distanceThreshold, magnetThreshold):
         # Take 4 minus the opposite element of moves
         exitMoves.append(4 - moves[len(moves) - i - 1])
 
+    # Play tones representing path to exit
     for i in range(len(exitMoves)):
         if exitMoves[i] == 1:
             music.play(music.tone_playable(Note.C, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
@@ -160,8 +163,6 @@ def navigateMaze(distanceThreshold, magnetThreshold):
         elif exitMoves[i] == 3:
             turnRight()
             moveForward()
-    # Move forward fully out of maze
-    moveForward()
 
 def turnLeftTest():
     CutebotPro.pwm_cruise_control(-40, 40)
