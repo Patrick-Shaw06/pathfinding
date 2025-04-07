@@ -1,3 +1,6 @@
+//  Set Group for Radio Communications
+radio.setGroup(8)
+//  Basic Functions for Movement
 function isWall(distanceThreshold: number) {
     return CutebotPro.ultrasonic(SonarUnit.Centimeters) < distanceThreshold
 }
@@ -21,6 +24,7 @@ function moveForward() {
     CutebotPro.turnOffAllHeadlights()
 }
 
+//  Function to Navigate Maze
 function navigateMaze(distanceThreshold: number, magnetThreshold: number) {
     let move: number;
     let i: number;
@@ -30,8 +34,9 @@ function navigateMaze(distanceThreshold: number, magnetThreshold: number) {
     Navigating the maze is broken into four steps as follows:
         1: Pathfinding through the maze until the bomb is found
         2: Calculating an optimized path to the bomb
-        3: Reversing this path to optimize exiting
-        4: Exiting the maze
+        3: Transmitting this path to second robot
+        4: Reversing this path to optimize exiting
+        5: Exiting the maze
     
     Step 1 - Pathfinding Through the Maze:
     The maze is navigated by always followling the left wall.
@@ -51,7 +56,7 @@ function navigateMaze(distanceThreshold: number, magnetThreshold: number) {
     let moves = []
     //  List to store past moves
     //  Navigate maze until magnet is found
-    while (Math.abs(input.magneticForce(Dimension.Y)) < magnetThreshold) {
+    while (Math.abs(input.magneticForce(Dimension.Strength)) < magnetThreshold) {
         //  Check left direction first
         turnLeft()
         move = 1
@@ -79,19 +84,13 @@ function navigateMaze(distanceThreshold: number, magnetThreshold: number) {
         if (moves[i] == 1) {
             music.play(music.tonePlayable(Note.C, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
             music.rest(music.beat(BeatFraction.Half))
-        }
-        
-        if (moves[i] == 2) {
+        } else if (moves[i] == 2) {
             music.play(music.tonePlayable(Note.E, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
             music.rest(music.beat(BeatFraction.Half))
-        }
-        
-        if (moves[i] == 3) {
+        } else if (moves[i] == 3) {
             music.play(music.tonePlayable(Note.G, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
             music.rest(music.beat(BeatFraction.Half))
-        }
-        
-        if (moves[i] == 4) {
+        } else if (moves[i] == 4) {
             music.play(music.tonePlayable(Note.C5, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
             music.rest(music.beat(BeatFraction.Half))
         }
@@ -135,32 +134,33 @@ function navigateMaze(distanceThreshold: number, magnetThreshold: number) {
         i += 1
     }
     //  Increment i to move on to next index
-    //  Play tones representing optimal path to take
+    /** 
+    Step 3 - Transmitting Optimized Path
+    Transmitting the optimized path simply requires iterating through moves
+        and transmitting each value.
+    To confirm transmission and reception, each bot will play a tone corresponding
+        to the move transmitted.
+    
+ */
     for (i = 0; i < moves.length; i++) {
+        //  Transmit move
+        radio.sendNumber(moves[i])
+        //  Play tone corresponding to move
         if (moves[i] == 1) {
             music.play(music.tonePlayable(Note.C, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
             music.rest(music.beat(BeatFraction.Half))
-        }
-        
-        if (moves[i] == 2) {
+        } else if (moves[i] == 2) {
             music.play(music.tonePlayable(Note.E, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
             music.rest(music.beat(BeatFraction.Half))
-        }
-        
-        if (moves[i] == 3) {
+        } else if (moves[i] == 3) {
             music.play(music.tonePlayable(Note.G, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
-            music.rest(music.beat(BeatFraction.Half))
-        }
-        
-        if (moves[i] == 4) {
-            music.play(music.tonePlayable(Note.C5, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
             music.rest(music.beat(BeatFraction.Half))
         }
         
     }
     music.rest(music.beat(BeatFraction.Breve))
     /** 
-    Step 3 - Reversing Optimized Path
+    Step 4 - Reversing Optimized Path
     Reversing the optimized path can be done by first reversing the order of
         the optimized path from the previous step and then subtracting each
         element from 4 to find the opposite of each of the steps taken.
@@ -195,7 +195,7 @@ function navigateMaze(distanceThreshold: number, magnetThreshold: number) {
         
     }
     /** 
-    Step 4 - Exiting the Maze
+    Step 5 - Exiting the Maze
     The bot can exit the maze by turning around, moving forwards, then
         simply following the list of exit moves.
     
@@ -220,18 +220,10 @@ function navigateMaze(distanceThreshold: number, magnetThreshold: number) {
     }
 }
 
-function turnLeftTest() {
-    CutebotPro.pwmCruiseControl(-40, 40)
-    CutebotPro.angleRunning(CutebotProWheel.RightWheel, 330, CutebotProAngleUnits.Angle)
-}
-
-//  CutebotPro.trolley_steering(CutebotProTurn.LEFT_IN_PLACE, 90)
-function turnRightTest() {
-    //  CutebotPro.pwm_cruise_control(40, -40)
-    //  CutebotPro.angle_running(CutebotProWheel.LEFT_WHEEL, 330, CutebotProAngleUnits.ANGLE)
-    CutebotPro.trolleySteering(CutebotProTurn.RightInPlace, 95)
-}
-
+//  Button A Pressed
+//  Button B Pressed
+//  Radio Transmission
+//  Interaction Handling
 input.onButtonPressed(Button.A, function on_button_pressed_a() {
     basic.showLeds(`
     . . # . .
@@ -240,12 +232,34 @@ input.onButtonPressed(Button.A, function on_button_pressed_a() {
     # # # # #
     # . . . #
     `)
-    basic.pause(1000)
+    basic.pause(500)
     basic.clearScreen()
-    for (let i = 0; i < 4; i++) {
-        turnLeftTest()
+    while (true) {
+        basic.showNumber(Math.trunc(Math.abs(input.magneticForce(Dimension.Strength))), 50)
     }
 })
-input.onButtonPressed(Button.B, function run() {
+input.onButtonPressed(Button.B, function on_button_pressed_b() {
+    basic.showLeds(`
+    # # # # .
+    # . . . #
+    # # # # .
+    # . . . #
+    # # # # .
+    `)
+    basic.pause(500)
+    basic.clearScreen()
     navigateMaze(20, 300)
+})
+radio.onReceivedNumber(function on_received_number(move: number) {
+    if (move == 1) {
+        music.play(music.tonePlayable(Note.C, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
+        music.rest(music.beat(BeatFraction.Half))
+    } else if (move == 2) {
+        music.play(music.tonePlayable(Note.E, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
+        music.rest(music.beat(BeatFraction.Half))
+    } else if (move == 3) {
+        music.play(music.tonePlayable(Note.G, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
+        music.rest(music.beat(BeatFraction.Half))
+    }
+    
 })

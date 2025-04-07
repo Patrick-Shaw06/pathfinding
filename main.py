@@ -1,3 +1,7 @@
+# Set Group for Radio Communications
+radio.set_group(8)
+
+# Basic Functions for Movement
 def isWall(distanceThreshold):
     return CutebotPro.ultrasonic(SonarUnit.CENTIMETERS) < distanceThreshold
 
@@ -5,7 +9,6 @@ def turnLeft():
     CutebotPro.color_light(CutebotProRGBLight.RGBL, 0xff0000)
     CutebotPro.trolley_steering(CutebotProTurn.LEFT_IN_PLACE, 95)
     CutebotPro.turn_off_all_headlights()
-    
 
 def turnRight():
     CutebotPro.color_light(CutebotProRGBLight.RGBR, 0xff0000)
@@ -18,13 +21,15 @@ def moveForward():
     CutebotPro.distance_running(CutebotProOrientation.ADVANCE, 30.7, CutebotProDistanceUnits.CM)
     CutebotPro.turn_off_all_headlights()
 
+# Function to Navigate Maze
 def navigateMaze(distanceThreshold, magnetThreshold):
     '''
     Navigating the maze is broken into four steps as follows:
         1: Pathfinding through the maze until the bomb is found
         2: Calculating an optimized path to the bomb
-        3: Reversing this path to optimize exiting
-        4: Exiting the maze
+        3: Transmitting this path to second robot
+        4: Reversing this path to optimize exiting
+        5: Exiting the maze
     
     Step 1 - Pathfinding Through the Maze:
     The maze is navigated by always followling the left wall.
@@ -42,7 +47,7 @@ def navigateMaze(distanceThreshold, magnetThreshold):
     '''
     moves = [] # List to store past moves
     # Navigate maze until magnet is found
-    while (abs(input.magnetic_force(Dimension.Y)) < magnetThreshold):
+    while (abs(input.magnetic_force(Dimension.STRENGTH)) < magnetThreshold):
         # Check left direction first
         turnLeft()
         move = 1
@@ -65,15 +70,15 @@ def navigateMaze(distanceThreshold, magnetThreshold):
         if moves[i] == 1:
             music.play(music.tone_playable(Note.C, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
             music.rest(music.beat(BeatFraction.HALF))
-        if moves[i] == 2:
-                    music.play(music.tone_playable(Note.E, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-                    music.rest(music.beat(BeatFraction.HALF))
-        if moves[i] == 3:
-                    music.play(music.tone_playable(Note.G, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-                    music.rest(music.beat(BeatFraction.HALF))
-        if moves[i] == 4:
-                    music.play(music.tone_playable(Note.C5, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-                    music.rest(music.beat(BeatFraction.HALF))
+        elif moves[i] == 2:
+            music.play(music.tone_playable(Note.E, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
+            music.rest(music.beat(BeatFraction.HALF))
+        elif moves[i] == 3:
+            music.play(music.tone_playable(Note.G, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
+            music.rest(music.beat(BeatFraction.HALF))
+        elif moves[i] == 4:
+            music.play(music.tone_playable(Note.C5, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
+            music.rest(music.beat(BeatFraction.HALF))
 
     music.rest(music.beat(BeatFraction.BREVE))
 
@@ -100,25 +105,32 @@ def navigateMaze(distanceThreshold, magnetThreshold):
             i = 0 # Length and index of list changes. I could calculate the new list but its easier to just start at the beginning again.
         i += 1 # Increment i to move on to next index
 
-    # Play tones representing optimal path to take
+    '''
+    Step 3 - Transmitting Optimized Path
+    Transmitting the optimized path simply requires iterating through moves
+        and transmitting each value.
+    To confirm transmission and reception, each bot will play a tone corresponding
+        to the move transmitted.
+    '''
     for i in range(len(moves)):
+        # Transmit move
+        radio.send_number(moves[i])
+
+        # Play tone corresponding to move
         if moves[i] == 1:
             music.play(music.tone_playable(Note.C, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
             music.rest(music.beat(BeatFraction.HALF))
-        if moves[i] == 2:
-                    music.play(music.tone_playable(Note.E, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-                    music.rest(music.beat(BeatFraction.HALF))
-        if moves[i] == 3:
-                    music.play(music.tone_playable(Note.G, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-                    music.rest(music.beat(BeatFraction.HALF))
-        if moves[i] == 4:
-                    music.play(music.tone_playable(Note.C5, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-                    music.rest(music.beat(BeatFraction.HALF))
+        elif moves[i] == 2:
+            music.play(music.tone_playable(Note.E, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
+            music.rest(music.beat(BeatFraction.HALF))
+        elif moves[i] == 3:
+            music.play(music.tone_playable(Note.G, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
+            music.rest(music.beat(BeatFraction.HALF))
 
     music.rest(music.beat(BeatFraction.BREVE))
 
     '''
-    Step 3 - Reversing Optimized Path
+    Step 4 - Reversing Optimized Path
     Reversing the optimized path can be done by first reversing the order of
         the optimized path from the previous step and then subtracting each
         element from 4 to find the opposite of each of the steps taken.
@@ -134,17 +146,17 @@ def navigateMaze(distanceThreshold, magnetThreshold):
             music.play(music.tone_playable(Note.C, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
             music.rest(music.beat(BeatFraction.HALF))
         if exitMoves[i] == 2:
-                    music.play(music.tone_playable(Note.E, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-                    music.rest(music.beat(BeatFraction.HALF))
+            music.play(music.tone_playable(Note.E, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
+            music.rest(music.beat(BeatFraction.HALF))
         if exitMoves[i] == 3:
-                    music.play(music.tone_playable(Note.G, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-                    music.rest(music.beat(BeatFraction.HALF))
+            music.play(music.tone_playable(Note.G, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
+            music.rest(music.beat(BeatFraction.HALF))
         if exitMoves[i] == 4:
-                    music.play(music.tone_playable(Note.C5, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-                    music.rest(music.beat(BeatFraction.HALF))
+            music.play(music.tone_playable(Note.C5, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
+            music.rest(music.beat(BeatFraction.HALF))
 
     '''
-    Step 4 - Exiting the Maze
+    Step 5 - Exiting the Maze
     The bot can exit the maze by turning around, moving forwards, then
         simply following the list of exit moves.
     '''
@@ -164,16 +176,7 @@ def navigateMaze(distanceThreshold, magnetThreshold):
             turnRight()
             moveForward()
 
-def turnLeftTest():
-    CutebotPro.pwm_cruise_control(-40, 40)
-    CutebotPro.angle_running(CutebotProWheel.RIGHT_WHEEL, 330, CutebotProAngleUnits.ANGLE)
-    # CutebotPro.trolley_steering(CutebotProTurn.LEFT_IN_PLACE, 90)
-
-def turnRightTest():
-    # CutebotPro.pwm_cruise_control(40, -40)
-    # CutebotPro.angle_running(CutebotProWheel.LEFT_WHEEL, 330, CutebotProAngleUnits.ANGLE)
-    CutebotPro.trolley_steering(CutebotProTurn.RIGHT_IN_PLACE, 95)
-
+# Button A Pressed
 def on_button_pressed_a():
     basic.show_leds("""
     . . # . .
@@ -182,13 +185,37 @@ def on_button_pressed_a():
     # # # # #
     # . . . #
     """)
-    basic.pause(1000)
+    basic.pause(500)
     basic.clear_screen()
-    for i in range(4):
-        turnLeftTest()
+    while True:
+        basic.show_number(int(abs(input.magnetic_force(Dimension.STRENGTH))), 50)
 
-def run():
+# Button B Pressed
+def on_button_pressed_b():
+    basic.show_leds("""
+    # # # # .
+    # . . . #
+    # # # # .
+    # . . . #
+    # # # # .
+    """)
+    basic.pause(500)
+    basic.clear_screen()
     navigateMaze(20, 300)
 
+# Radio Transmission
+def on_received_number(move):
+    if move == 1:
+        music.play(music.tone_playable(Note.C, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
+        music.rest(music.beat(BeatFraction.HALF))
+    elif move == 2:
+        music.play(music.tone_playable(Note.E, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
+        music.rest(music.beat(BeatFraction.HALF))
+    elif move == 3:
+        music.play(music.tone_playable(Note.G, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
+        music.rest(music.beat(BeatFraction.HALF))
+
+# Interaction Handling
 input.on_button_pressed(Button.A, on_button_pressed_a)
-input.on_button_pressed(Button.B, run)
+input.on_button_pressed(Button.B, on_button_pressed_b)
+radio.on_received_number(on_received_number)
