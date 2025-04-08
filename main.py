@@ -69,16 +69,13 @@ def navigateMaze(distanceThreshold, magnetThreshold):
     for i in range(len(moves)):
         if moves[i] == 1:
             music.play(music.tone_playable(Note.C, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-            music.rest(music.beat(BeatFraction.HALF))
         elif moves[i] == 2:
             music.play(music.tone_playable(Note.E, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-            music.rest(music.beat(BeatFraction.HALF))
         elif moves[i] == 3:
             music.play(music.tone_playable(Note.G, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-            music.rest(music.beat(BeatFraction.HALF))
         elif moves[i] == 4:
             music.play(music.tone_playable(Note.C5, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-            music.rest(music.beat(BeatFraction.HALF))
+        music.rest(music.beat(BeatFraction.HALF))
 
     music.rest(music.beat(BeatFraction.BREVE))
 
@@ -119,13 +116,11 @@ def navigateMaze(distanceThreshold, magnetThreshold):
         # Play tone corresponding to move
         if moves[i] == 1:
             music.play(music.tone_playable(Note.C, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-            music.rest(music.beat(BeatFraction.HALF))
         elif moves[i] == 2:
             music.play(music.tone_playable(Note.E, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-            music.rest(music.beat(BeatFraction.HALF))
         elif moves[i] == 3:
             music.play(music.tone_playable(Note.G, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-            music.rest(music.beat(BeatFraction.HALF))
+        music.rest(music.beat(BeatFraction.HALF))
 
     music.rest(music.beat(BeatFraction.BREVE))
 
@@ -144,16 +139,11 @@ def navigateMaze(distanceThreshold, magnetThreshold):
     for i in range(len(exitMoves)):
         if exitMoves[i] == 1:
             music.play(music.tone_playable(Note.C, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-            music.rest(music.beat(BeatFraction.HALF))
         if exitMoves[i] == 2:
             music.play(music.tone_playable(Note.E, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-            music.rest(music.beat(BeatFraction.HALF))
         if exitMoves[i] == 3:
             music.play(music.tone_playable(Note.G, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-            music.rest(music.beat(BeatFraction.HALF))
-        if exitMoves[i] == 4:
-            music.play(music.tone_playable(Note.C5, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-            music.rest(music.beat(BeatFraction.HALF))
+        music.rest(music.beat(BeatFraction.HALF))
 
     '''
     Step 5 - Exiting the Maze
@@ -187,8 +177,6 @@ def on_button_pressed_a():
     """)
     basic.pause(500)
     basic.clear_screen()
-    while True:
-        basic.show_number(int(abs(input.magnetic_force(Dimension.STRENGTH))), 50)
 
 # Button B Pressed
 def on_button_pressed_b():
@@ -207,13 +195,11 @@ def on_button_pressed_b():
 def on_received_number(move):
     if move == 1:
         music.play(music.tone_playable(Note.C, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-        music.rest(music.beat(BeatFraction.HALF))
     elif move == 2:
         music.play(music.tone_playable(Note.E, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-        music.rest(music.beat(BeatFraction.HALF))
     elif move == 3:
         music.play(music.tone_playable(Note.G, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-        music.rest(music.beat(BeatFraction.HALF))
+    music.rest(music.beat(BeatFraction.HALF))
 
 # Interaction Handling
 input.on_button_pressed(Button.A, on_button_pressed_a)

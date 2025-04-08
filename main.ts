@@ -83,18 +83,15 @@ function navigateMaze(distanceThreshold: number, magnetThreshold: number) {
     for (i = 0; i < moves.length; i++) {
         if (moves[i] == 1) {
             music.play(music.tonePlayable(Note.C, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
-            music.rest(music.beat(BeatFraction.Half))
         } else if (moves[i] == 2) {
             music.play(music.tonePlayable(Note.E, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
-            music.rest(music.beat(BeatFraction.Half))
         } else if (moves[i] == 3) {
             music.play(music.tonePlayable(Note.G, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
-            music.rest(music.beat(BeatFraction.Half))
         } else if (moves[i] == 4) {
             music.play(music.tonePlayable(Note.C5, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
-            music.rest(music.beat(BeatFraction.Half))
         }
         
+        music.rest(music.beat(BeatFraction.Half))
     }
     music.rest(music.beat(BeatFraction.Breve))
     /** 
@@ -148,15 +145,13 @@ function navigateMaze(distanceThreshold: number, magnetThreshold: number) {
         //  Play tone corresponding to move
         if (moves[i] == 1) {
             music.play(music.tonePlayable(Note.C, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
-            music.rest(music.beat(BeatFraction.Half))
         } else if (moves[i] == 2) {
             music.play(music.tonePlayable(Note.E, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
-            music.rest(music.beat(BeatFraction.Half))
         } else if (moves[i] == 3) {
             music.play(music.tonePlayable(Note.G, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
-            music.rest(music.beat(BeatFraction.Half))
         }
         
+        music.rest(music.beat(BeatFraction.Half))
     }
     music.rest(music.beat(BeatFraction.Breve))
     /** 
@@ -175,24 +170,17 @@ function navigateMaze(distanceThreshold: number, magnetThreshold: number) {
     for (i = 0; i < exitMoves.length; i++) {
         if (exitMoves[i] == 1) {
             music.play(music.tonePlayable(Note.C, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
-            music.rest(music.beat(BeatFraction.Half))
         }
         
         if (exitMoves[i] == 2) {
             music.play(music.tonePlayable(Note.E, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
-            music.rest(music.beat(BeatFraction.Half))
         }
         
         if (exitMoves[i] == 3) {
             music.play(music.tonePlayable(Note.G, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
-            music.rest(music.beat(BeatFraction.Half))
         }
         
-        if (exitMoves[i] == 4) {
-            music.play(music.tonePlayable(Note.C5, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
-            music.rest(music.beat(BeatFraction.Half))
-        }
-        
+        music.rest(music.beat(BeatFraction.Half))
     }
     /** 
     Step 5 - Exiting the Maze
@@ -234,9 +222,6 @@ input.onButtonPressed(Button.A, function on_button_pressed_a() {
     `)
     basic.pause(500)
     basic.clearScreen()
-    while (true) {
-        basic.showNumber(Math.trunc(Math.abs(input.magneticForce(Dimension.Strength))), 50)
-    }
 })
 input.onButtonPressed(Button.B, function on_button_pressed_b() {
     basic.showLeds(`
@@ -253,13 +238,11 @@ input.onButtonPressed(Button.B, function on_button_pressed_b() {
 radio.onReceivedNumber(function on_received_number(move: number) {
     if (move == 1) {
         music.play(music.tonePlayable(Note.C, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
-        music.rest(music.beat(BeatFraction.Half))
     } else if (move == 2) {
         music.play(music.tonePlayable(Note.E, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
-        music.rest(music.beat(BeatFraction.Half))
     } else if (move == 3) {
         music.play(music.tonePlayable(Note.G, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
-        music.rest(music.beat(BeatFraction.Half))
     }
     
+    music.rest(music.beat(BeatFraction.Half))
 })
