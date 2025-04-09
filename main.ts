@@ -144,14 +144,18 @@ function navigateMaze(distanceThreshold: number, magnetThreshold: number) {
         radio.sendNumber(moves[i])
         //  Play tone corresponding to move
         if (moves[i] == 1) {
+            CutebotPro.colorLight(CutebotProRGBLight.RGBL, 0xff0000)
             music.play(music.tonePlayable(Note.C, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
         } else if (moves[i] == 2) {
+            CutebotPro.colorLight(CutebotProRGBLight.RGBA, 0x00ff00)
             music.play(music.tonePlayable(Note.E, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
         } else if (moves[i] == 3) {
+            CutebotPro.colorLight(CutebotProRGBLight.RGBR, 0xff0000)
             music.play(music.tonePlayable(Note.G, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
         }
         
         music.rest(music.beat(BeatFraction.Half))
+        CutebotPro.turnOffAllHeadlights()
     }
     music.rest(music.beat(BeatFraction.Breve))
     /** 
@@ -237,12 +241,19 @@ input.onButtonPressed(Button.B, function on_button_pressed_b() {
 })
 radio.onReceivedNumber(function on_received_number(move: number) {
     if (move == 1) {
+        //  Turn left
+        CutebotPro.colorLight(CutebotProRGBLight.RGBL, 0xff0000)
         music.play(music.tonePlayable(Note.C, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
     } else if (move == 2) {
+        //  Go straight
+        CutebotPro.colorLight(CutebotProRGBLight.RGBA, 0x00ff00)
         music.play(music.tonePlayable(Note.E, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
     } else if (move == 3) {
+        //  Turn right
+        CutebotPro.colorLight(CutebotProRGBLight.RGBR, 0xff0000)
         music.play(music.tonePlayable(Note.G, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
     }
     
     music.rest(music.beat(BeatFraction.Half))
+    CutebotPro.turnOffAllHeadlights()
 })

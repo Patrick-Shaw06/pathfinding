@@ -115,12 +115,17 @@ def navigateMaze(distanceThreshold, magnetThreshold):
 
         # Play tone corresponding to move
         if moves[i] == 1:
+            CutebotPro.color_light(CutebotProRGBLight.RGBL, 0xff0000)
             music.play(music.tone_playable(Note.C, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
         elif moves[i] == 2:
+            CutebotPro.color_light(CutebotProRGBLight.RGBA, 0x00ff00)
             music.play(music.tone_playable(Note.E, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
         elif moves[i] == 3:
+            CutebotPro.color_light(CutebotProRGBLight.RGBR, 0xff0000)
             music.play(music.tone_playable(Note.G, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
         music.rest(music.beat(BeatFraction.HALF))
+
+        CutebotPro.turn_off_all_headlights()
 
     music.rest(music.beat(BeatFraction.BREVE))
 
@@ -193,13 +198,17 @@ def on_button_pressed_b():
 
 # Radio Transmission
 def on_received_number(move):
-    if move == 1:
+    if move == 1: # Turn left
+        CutebotPro.color_light(CutebotProRGBLight.RGBL, 0xff0000)
         music.play(music.tone_playable(Note.C, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-    elif move == 2:
+    elif move == 2: # Go straight
+        CutebotPro.color_light(CutebotProRGBLight.RGBA, 0x00ff00)
         music.play(music.tone_playable(Note.E, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-    elif move == 3:
+    elif move == 3: # Turn right
+        CutebotPro.color_light(CutebotProRGBLight.RGBR, 0xff0000)
         music.play(music.tone_playable(Note.G, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
     music.rest(music.beat(BeatFraction.HALF))
+    CutebotPro.turn_off_all_headlights()
 
 # Interaction Handling
 input.on_button_pressed(Button.A, on_button_pressed_a)
