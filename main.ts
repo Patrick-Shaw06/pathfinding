@@ -19,12 +19,22 @@ function turnRight() {
 }
 
 function moveForward() {
+    /** 
+    The bot moves forward by moving relative to the gridlines in order to
+        stay aligned within the maze grid.
+    To do this it moves forward until it senses a gridline with one of the
+        tracking sensors.
+    Then, it turns until all four tracking sensors sense the line, meaning
+        the bot is straightened.
+    Lastly, it moves forwards half of the distance of one grid space.
+    
+ */
     CutebotPro.colorLight(CutebotProRGBLight.RGBA, 0x00ff00)
     //  Move forwards until gridline is reached
     while (Math.abs(CutebotPro.getOffset()) >= 2800) {
         CutebotPro.pwmCruiseControl(10, 10)
     }
-    //  Too far left needs to turn right
+    //  Too far left; the bot needs to turn right
     if (CutebotPro.getOffset() > 0) {
         while (CutebotPro.getOffset() > 0 && CutebotPro.getOffset() < 3000) {
             CutebotPro.colorLight(CutebotProRGBLight.RGBR, 0x0000ff)
@@ -34,7 +44,7 @@ function moveForward() {
         CutebotPro.pwmCruiseControl(10, 10)
         CutebotPro.distanceRunning(CutebotProOrientation.Advance, 5, CutebotProDistanceUnits.Cm)
     } else {
-        //  Too far right needs to turn left
+        //  Too far right; the bot needs to turn left
         while (CutebotPro.getOffset() < 0 && CutebotPro.getOffset() > -3000) {
             CutebotPro.colorLight(CutebotProRGBLight.RGBL, 0x0000ff)
             CutebotPro.pwmCruiseControl(0, 10)
@@ -47,16 +57,6 @@ function moveForward() {
     //  Move forwards halfway into next grid square
     CutebotPro.distanceRunning(CutebotProOrientation.Advance, 30.7 / 2, CutebotProDistanceUnits.Cm)
     CutebotPro.turnOffAllHeadlights()
-}
-
-function orient() {
-    let prevDistance = CutebotPro.ultrasonic(SonarUnit.Centimeters)
-    CutebotPro.trolleySteering(CutebotProTurn.LeftInPlace, 5)
-    while (CutebotPro.ultrasonic(SonarUnit.Centimeters) <= prevDistance) {
-        prevDistance = CutebotPro.ultrasonic(SonarUnit.Centimeters)
-        CutebotPro.trolleySteering(CutebotProTurn.LeftInPlace, 5)
-    }
-    CutebotPro.trolleySteering(CutebotProTurn.RightInPlace, 5)
 }
 
 //  Function to Navigate Maze

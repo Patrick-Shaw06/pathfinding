@@ -17,11 +17,20 @@ def turnRight():
     CutebotPro.turn_off_all_headlights()
 
 def moveForward():
+    '''
+    The bot moves forward by moving relative to the gridlines in order to
+        stay aligned within the maze grid.
+    To do this it moves forward until it senses a gridline with one of the
+        tracking sensors.
+    Then, it turns until all four tracking sensors sense the line, meaning
+        the bot is straightened.
+    Lastly, it moves forwards half of the distance of one grid space.
+    '''
     CutebotPro.color_light(CutebotProRGBLight.RGBA, 0x00ff00)
     # Move forwards until gridline is reached
     while abs(CutebotPro.get_offset()) >= 2800:
         CutebotPro.pwm_cruise_control(10, 10)
-    # Too far left needs to turn right
+    # Too far left; the bot needs to turn right
     if CutebotPro.get_offset() > 0:
         while CutebotPro.get_offset() > 0 and CutebotPro.get_offset() < 3000:
             CutebotPro.color_light(CutebotProRGBLight.RGBR, 0x0000ff)
@@ -29,7 +38,7 @@ def moveForward():
             CutebotPro.turn_off_all_headlights()
         CutebotPro.pwm_cruise_control(10, 10)
         CutebotPro.distance_running(CutebotProOrientation.ADVANCE, 5, CutebotProDistanceUnits.CM)
-    # Too far right needs to turn left
+    # Too far right; the bot needs to turn left
     else:
         while CutebotPro.get_offset() < 0 and CutebotPro.get_offset() > -3000:
             CutebotPro.color_light(CutebotProRGBLight.RGBL, 0x0000ff)
@@ -40,14 +49,6 @@ def moveForward():
     # Move forwards halfway into next grid square
     CutebotPro.distance_running(CutebotProOrientation.ADVANCE, 30.7 / 2, CutebotProDistanceUnits.CM)
     CutebotPro.turn_off_all_headlights()
-
-def orient():
-    prevDistance = CutebotPro.ultrasonic(SonarUnit.CENTIMETERS)
-    CutebotPro.trolley_steering(CutebotProTurn.LEFT_IN_PLACE, 5)
-    while CutebotPro.ultrasonic(SonarUnit.CENTIMETERS) <= prevDistance:
-        prevDistance = CutebotPro.ultrasonic(SonarUnit.CENTIMETERS)
-        CutebotPro.trolley_steering(CutebotProTurn.LEFT_IN_PLACE, 5)
-    CutebotPro.trolley_steering(CutebotProTurn.RIGHT_IN_PLACE, 5)
 
 # Function to Navigate Maze
 def navigateMaze(distanceThreshold, magnetThreshold):
