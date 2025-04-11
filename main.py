@@ -4,6 +4,10 @@ music.set_tempo(200)
 
 # Basic Functions for Movement
 def isWall(distanceThreshold):
+    # If too close to wall, back up slightly
+    if CutebotPro.ultrasonic(SonarUnit.CENTIMETERS) < 5:
+        CutebotPro.pwm_cruise_control(-10, -10)
+        CutebotPro.distance_running(CutebotProOrientation.RETREAT, 3, CutebotProDistanceUnits.CM)
     return CutebotPro.ultrasonic(SonarUnit.CENTIMETERS) < distanceThreshold
 
 def turnLeft():
@@ -35,7 +39,7 @@ def moveForward():
         while CutebotPro.get_offset() > 0 and CutebotPro.get_offset() < 3000:
             CutebotPro.color_light(CutebotProRGBLight.RGBR, 0x0000ff)
             CutebotPro.pwm_cruise_control(10, 0)
-            CutebotPro.turn_off_all_headlights()
+            CutebotPro.color_light(CutebotProRGBLight.RGBR, 0x00ff00)
         CutebotPro.pwm_cruise_control(10, 10)
         CutebotPro.distance_running(CutebotProOrientation.ADVANCE, 5, CutebotProDistanceUnits.CM)
     # Too far right; the bot needs to turn left
@@ -43,7 +47,7 @@ def moveForward():
         while CutebotPro.get_offset() < 0 and CutebotPro.get_offset() > -3000:
             CutebotPro.color_light(CutebotProRGBLight.RGBL, 0x0000ff)
             CutebotPro.pwm_cruise_control(0, 10)
-            CutebotPro.turn_off_all_headlights()
+            CutebotPro.color_light(CutebotProRGBLight.RGBL, 0x00ff00)
         CutebotPro.pwm_cruise_control(10, 10)
         CutebotPro.distance_running(CutebotProOrientation.ADVANCE, 5, CutebotProDistanceUnits.CM)
     # Move forwards halfway into next grid square

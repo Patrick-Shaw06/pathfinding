@@ -3,6 +3,12 @@ radio.setGroup(8)
 music.setTempo(200)
 //  Basic Functions for Movement
 function isWall(distanceThreshold: number) {
+    //  If too close to wall, back up slightly
+    if (CutebotPro.ultrasonic(SonarUnit.Centimeters) < 5) {
+        CutebotPro.pwmCruiseControl(-10, -10)
+        CutebotPro.distanceRunning(CutebotProOrientation.Retreat, 3, CutebotProDistanceUnits.Cm)
+    }
+    
     return CutebotPro.ultrasonic(SonarUnit.Centimeters) < distanceThreshold
 }
 
@@ -39,7 +45,7 @@ function moveForward() {
         while (CutebotPro.getOffset() > 0 && CutebotPro.getOffset() < 3000) {
             CutebotPro.colorLight(CutebotProRGBLight.RGBR, 0x0000ff)
             CutebotPro.pwmCruiseControl(10, 0)
-            CutebotPro.turnOffAllHeadlights()
+            CutebotPro.colorLight(CutebotProRGBLight.RGBR, 0x00ff00)
         }
         CutebotPro.pwmCruiseControl(10, 10)
         CutebotPro.distanceRunning(CutebotProOrientation.Advance, 5, CutebotProDistanceUnits.Cm)
@@ -48,7 +54,7 @@ function moveForward() {
         while (CutebotPro.getOffset() < 0 && CutebotPro.getOffset() > -3000) {
             CutebotPro.colorLight(CutebotProRGBLight.RGBL, 0x0000ff)
             CutebotPro.pwmCruiseControl(0, 10)
-            CutebotPro.turnOffAllHeadlights()
+            CutebotPro.colorLight(CutebotProRGBLight.RGBL, 0x00ff00)
         }
         CutebotPro.pwmCruiseControl(10, 10)
         CutebotPro.distanceRunning(CutebotProOrientation.Advance, 5, CutebotProDistanceUnits.Cm)
