@@ -1,5 +1,6 @@
 //  Set Group for Radio Communications
 radio.setGroup(8)
+music.setTempo(200)
 //  Basic Functions for Movement
 function isWall(distanceThreshold: number) {
     return CutebotPro.ultrasonic(SonarUnit.Centimeters) < distanceThreshold
@@ -26,14 +27,18 @@ function moveForward() {
     //  Too far left needs to turn right
     if (CutebotPro.getOffset() > 0) {
         while (CutebotPro.getOffset() > 0 && CutebotPro.getOffset() < 3000) {
+            CutebotPro.colorLight(CutebotProRGBLight.RGBR, 0x0000ff)
             CutebotPro.pwmCruiseControl(10, 0)
+            CutebotPro.turnOffAllHeadlights()
         }
         CutebotPro.pwmCruiseControl(10, 10)
         CutebotPro.distanceRunning(CutebotProOrientation.Advance, 5, CutebotProDistanceUnits.Cm)
     } else {
         //  Too far right needs to turn left
         while (CutebotPro.getOffset() < 0 && CutebotPro.getOffset() > -3000) {
+            CutebotPro.colorLight(CutebotProRGBLight.RGBL, 0x0000ff)
             CutebotPro.pwmCruiseControl(0, 10)
+            CutebotPro.turnOffAllHeadlights()
         }
         CutebotPro.pwmCruiseControl(10, 10)
         CutebotPro.distanceRunning(CutebotProOrientation.Advance, 5, CutebotProDistanceUnits.Cm)
@@ -243,23 +248,6 @@ function navigateMaze(distanceThreshold: number, magnetThreshold: number) {
 }
 
 //  Button A Pressed
-//  while True:
-//      basic.show_string("X")
-//      basic.clear_screen()
-//      basic.show_number(abs(input.magnetic_force(Dimension.X)) - abs(input.magnetic_force(Dimension.X)) % 1, 75)
-//      basic.clear_screen()
-//      basic.show_string("Y")
-//      basic.clear_screen()
-//      basic.show_number(abs(input.magnetic_force(Dimension.Y)) - abs(input.magnetic_force(Dimension.Y)) % 1, 75)
-//      basic.clear_screen()
-//      basic.show_string("Z")
-//      basic.clear_screen()
-//      basic.show_number(abs(input.magnetic_force(Dimension.Z)) - abs(input.magnetic_force(Dimension.Z)) % 1, 75)
-//      basic.clear_screen()
-//      basic.show_string("A")
-//      basic.clear_screen()
-//      basic.show_number(abs(input.magnetic_force(Dimension.STRENGTH)) - abs(input.magnetic_force(Dimension.STRENGTH)) % 1, 75)
-//      basic.clear_screen()
 //  Button B Pressed
 //  Radio Transmission
 //  Interaction Handling
@@ -273,7 +261,7 @@ input.onButtonPressed(Button.A, function on_button_pressed_a() {
     `)
     basic.pause(500)
     basic.clearScreen()
-    moveForward()
+    CutebotPro.colorLight(CutebotProRGBLight.RGBA, 0x00ff00)
 })
 input.onButtonPressed(Button.B, function on_button_pressed_b() {
     basic.showLeds(`

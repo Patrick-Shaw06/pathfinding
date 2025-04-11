@@ -1,5 +1,6 @@
 # Set Group for Radio Communications
 radio.set_group(8)
+music.set_tempo(200)
 
 # Basic Functions for Movement
 def isWall(distanceThreshold):
@@ -23,13 +24,17 @@ def moveForward():
     # Too far left needs to turn right
     if CutebotPro.get_offset() > 0:
         while CutebotPro.get_offset() > 0 and CutebotPro.get_offset() < 3000:
+            CutebotPro.color_light(CutebotProRGBLight.RGBR, 0x0000ff)
             CutebotPro.pwm_cruise_control(10, 0)
+            CutebotPro.turn_off_all_headlights()
         CutebotPro.pwm_cruise_control(10, 10)
         CutebotPro.distance_running(CutebotProOrientation.ADVANCE, 5, CutebotProDistanceUnits.CM)
     # Too far right needs to turn left
     else:
         while CutebotPro.get_offset() < 0 and CutebotPro.get_offset() > -3000:
+            CutebotPro.color_light(CutebotProRGBLight.RGBL, 0x0000ff)
             CutebotPro.pwm_cruise_control(0, 10)
+            CutebotPro.turn_off_all_headlights()
         CutebotPro.pwm_cruise_control(10, 10)
         CutebotPro.distance_running(CutebotProOrientation.ADVANCE, 5, CutebotProDistanceUnits.CM)
     # Move forwards halfway into next grid square
@@ -205,24 +210,7 @@ def on_button_pressed_a():
     """)
     basic.pause(500)
     basic.clear_screen()
-    moveForward()
-    # while True:
-    #     basic.show_string("X")
-    #     basic.clear_screen()
-    #     basic.show_number(abs(input.magnetic_force(Dimension.X)) - abs(input.magnetic_force(Dimension.X)) % 1, 75)
-    #     basic.clear_screen()
-    #     basic.show_string("Y")
-    #     basic.clear_screen()
-    #     basic.show_number(abs(input.magnetic_force(Dimension.Y)) - abs(input.magnetic_force(Dimension.Y)) % 1, 75)
-    #     basic.clear_screen()
-    #     basic.show_string("Z")
-    #     basic.clear_screen()
-    #     basic.show_number(abs(input.magnetic_force(Dimension.Z)) - abs(input.magnetic_force(Dimension.Z)) % 1, 75)
-    #     basic.clear_screen()
-    #     basic.show_string("A")
-    #     basic.clear_screen()
-    #     basic.show_number(abs(input.magnetic_force(Dimension.STRENGTH)) - abs(input.magnetic_force(Dimension.STRENGTH)) % 1, 75)
-    #     basic.clear_screen()
+    CutebotPro.color_light(CutebotProRGBLight.RGBA, 0x00ff00)
 
 # Button B Pressed
 def on_button_pressed_b():
