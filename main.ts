@@ -19,9 +19,39 @@ function turnRight() {
 
 function moveForward() {
     CutebotPro.colorLight(CutebotProRGBLight.RGBA, 0x00ff00)
-    CutebotPro.pwmCruiseControl(40, 40)
-    CutebotPro.distanceRunning(CutebotProOrientation.Advance, 30.7, CutebotProDistanceUnits.Cm)
+    //  Move forwards until gridline is reached
+    while (Math.abs(CutebotPro.getOffset()) >= 2800) {
+        CutebotPro.pwmCruiseControl(10, 10)
+    }
+    //  Too far left needs to turn right
+    if (CutebotPro.getOffset() > 0) {
+        while (CutebotPro.getOffset() > 0 && CutebotPro.getOffset() < 3000) {
+            CutebotPro.pwmCruiseControl(10, 0)
+        }
+        CutebotPro.pwmCruiseControl(10, 10)
+        CutebotPro.distanceRunning(CutebotProOrientation.Advance, 5, CutebotProDistanceUnits.Cm)
+    } else {
+        //  Too far right needs to turn left
+        while (CutebotPro.getOffset() < 0 && CutebotPro.getOffset() > -3000) {
+            CutebotPro.pwmCruiseControl(0, 10)
+        }
+        CutebotPro.pwmCruiseControl(10, 10)
+        CutebotPro.distanceRunning(CutebotProOrientation.Advance, 5, CutebotProDistanceUnits.Cm)
+    }
+    
+    //  Move forwards halfway into next grid square
+    CutebotPro.distanceRunning(CutebotProOrientation.Advance, 30.7 / 2, CutebotProDistanceUnits.Cm)
     CutebotPro.turnOffAllHeadlights()
+}
+
+function orient() {
+    let prevDistance = CutebotPro.ultrasonic(SonarUnit.Centimeters)
+    CutebotPro.trolleySteering(CutebotProTurn.LeftInPlace, 5)
+    while (CutebotPro.ultrasonic(SonarUnit.Centimeters) <= prevDistance) {
+        prevDistance = CutebotPro.ultrasonic(SonarUnit.Centimeters)
+        CutebotPro.trolleySteering(CutebotProTurn.LeftInPlace, 5)
+    }
+    CutebotPro.trolleySteering(CutebotProTurn.RightInPlace, 5)
 }
 
 //  Function to Navigate Maze
@@ -56,7 +86,7 @@ function navigateMaze(distanceThreshold: number, magnetThreshold: number) {
     let moves = []
     //  List to store past moves
     //  Navigate maze until magnet is found
-    while (Math.abs(input.magneticForce(Dimension.Strength)) < magnetThreshold) {
+    while (Math.abs(input.magneticForce(Dimension.Z)) < magnetThreshold) {
         //  Check left direction first
         turnLeft()
         move = 1
@@ -72,10 +102,10 @@ function navigateMaze(distanceThreshold: number, magnetThreshold: number) {
     }
     //  Save direction moved to list
     basic.showLeds(`
-    # # # # #
-    # # # # #
-    # # # # #
-    # # # # #
+    . # # . .
+    . # # # .
+    . # # # #
+    . # . . .
     # # # # #
     `)
     //  To show that the bomb has been found
@@ -213,6 +243,23 @@ function navigateMaze(distanceThreshold: number, magnetThreshold: number) {
 }
 
 //  Button A Pressed
+//  while True:
+//      basic.show_string("X")
+//      basic.clear_screen()
+//      basic.show_number(abs(input.magnetic_force(Dimension.X)) - abs(input.magnetic_force(Dimension.X)) % 1, 75)
+//      basic.clear_screen()
+//      basic.show_string("Y")
+//      basic.clear_screen()
+//      basic.show_number(abs(input.magnetic_force(Dimension.Y)) - abs(input.magnetic_force(Dimension.Y)) % 1, 75)
+//      basic.clear_screen()
+//      basic.show_string("Z")
+//      basic.clear_screen()
+//      basic.show_number(abs(input.magnetic_force(Dimension.Z)) - abs(input.magnetic_force(Dimension.Z)) % 1, 75)
+//      basic.clear_screen()
+//      basic.show_string("A")
+//      basic.clear_screen()
+//      basic.show_number(abs(input.magnetic_force(Dimension.STRENGTH)) - abs(input.magnetic_force(Dimension.STRENGTH)) % 1, 75)
+//      basic.clear_screen()
 //  Button B Pressed
 //  Radio Transmission
 //  Interaction Handling
@@ -226,6 +273,7 @@ input.onButtonPressed(Button.A, function on_button_pressed_a() {
     `)
     basic.pause(500)
     basic.clearScreen()
+    moveForward()
 })
 input.onButtonPressed(Button.B, function on_button_pressed_b() {
     basic.showLeds(`

@@ -17,9 +17,32 @@ def turnRight():
 
 def moveForward():
     CutebotPro.color_light(CutebotProRGBLight.RGBA, 0x00ff00)
-    CutebotPro.pwm_cruise_control(40, 40)
-    CutebotPro.distance_running(CutebotProOrientation.ADVANCE, 30.7, CutebotProDistanceUnits.CM)
+    # Move forwards until gridline is reached
+    while abs(CutebotPro.get_offset()) >= 2800:
+        CutebotPro.pwm_cruise_control(10, 10)
+    # Too far left needs to turn right
+    if CutebotPro.get_offset() > 0:
+        while CutebotPro.get_offset() > 0 and CutebotPro.get_offset() < 3000:
+            CutebotPro.pwm_cruise_control(10, 0)
+        CutebotPro.pwm_cruise_control(10, 10)
+        CutebotPro.distance_running(CutebotProOrientation.ADVANCE, 5, CutebotProDistanceUnits.CM)
+    # Too far right needs to turn left
+    else:
+        while CutebotPro.get_offset() < 0 and CutebotPro.get_offset() > -3000:
+            CutebotPro.pwm_cruise_control(0, 10)
+        CutebotPro.pwm_cruise_control(10, 10)
+        CutebotPro.distance_running(CutebotProOrientation.ADVANCE, 5, CutebotProDistanceUnits.CM)
+    # Move forwards halfway into next grid square
+    CutebotPro.distance_running(CutebotProOrientation.ADVANCE, 30.7 / 2, CutebotProDistanceUnits.CM)
     CutebotPro.turn_off_all_headlights()
+
+def orient():
+    prevDistance = CutebotPro.ultrasonic(SonarUnit.CENTIMETERS)
+    CutebotPro.trolley_steering(CutebotProTurn.LEFT_IN_PLACE, 5)
+    while CutebotPro.ultrasonic(SonarUnit.CENTIMETERS) <= prevDistance:
+        prevDistance = CutebotPro.ultrasonic(SonarUnit.CENTIMETERS)
+        CutebotPro.trolley_steering(CutebotProTurn.LEFT_IN_PLACE, 5)
+    CutebotPro.trolley_steering(CutebotProTurn.RIGHT_IN_PLACE, 5)
 
 # Function to Navigate Maze
 def navigateMaze(distanceThreshold, magnetThreshold):
@@ -47,7 +70,7 @@ def navigateMaze(distanceThreshold, magnetThreshold):
     '''
     moves = [] # List to store past moves
     # Navigate maze until magnet is found
-    while (abs(input.magnetic_force(Dimension.STRENGTH)) < magnetThreshold):
+    while (abs(input.magnetic_force(Dimension.Z)) < magnetThreshold):
         # Check left direction first
         turnLeft()
         move = 1
@@ -58,10 +81,10 @@ def navigateMaze(distanceThreshold, magnetThreshold):
         moveForward() # Move forward to next square
         moves.append(move) # Save direction moved to list
     basic.show_leds("""
-    # # # # #
-    # # # # #
-    # # # # #
-    # # # # #
+    . # # . .
+    . # # # .
+    . # # # #
+    . # . . .
     # # # # #
     """) # To show that the bomb has been found
 
@@ -182,6 +205,24 @@ def on_button_pressed_a():
     """)
     basic.pause(500)
     basic.clear_screen()
+    moveForward()
+    # while True:
+    #     basic.show_string("X")
+    #     basic.clear_screen()
+    #     basic.show_number(abs(input.magnetic_force(Dimension.X)) - abs(input.magnetic_force(Dimension.X)) % 1, 75)
+    #     basic.clear_screen()
+    #     basic.show_string("Y")
+    #     basic.clear_screen()
+    #     basic.show_number(abs(input.magnetic_force(Dimension.Y)) - abs(input.magnetic_force(Dimension.Y)) % 1, 75)
+    #     basic.clear_screen()
+    #     basic.show_string("Z")
+    #     basic.clear_screen()
+    #     basic.show_number(abs(input.magnetic_force(Dimension.Z)) - abs(input.magnetic_force(Dimension.Z)) % 1, 75)
+    #     basic.clear_screen()
+    #     basic.show_string("A")
+    #     basic.clear_screen()
+    #     basic.show_number(abs(input.magnetic_force(Dimension.STRENGTH)) - abs(input.magnetic_force(Dimension.STRENGTH)) % 1, 75)
+    #     basic.clear_screen()
 
 # Button B Pressed
 def on_button_pressed_b():
