@@ -1,8 +1,9 @@
 # Set Group for Radio Communications
 radio.set_group(8)
-music.set_tempo(200)
+music.set_tempo(200) # speed of audio representation of moves
 
 # Basic Functions for Movement
+# Check for wall
 def isWall(distanceThreshold):
     # If too close to wall, back up slightly
     if CutebotPro.ultrasonic(SonarUnit.CENTIMETERS) < 5:
@@ -10,16 +11,19 @@ def isWall(distanceThreshold):
         CutebotPro.distance_running(CutebotProOrientation.RETREAT, 3, CutebotProDistanceUnits.CM)
     return CutebotPro.ultrasonic(SonarUnit.CENTIMETERS) < distanceThreshold
 
+# Turning left
 def turnLeft():
     CutebotPro.color_light(CutebotProRGBLight.RGBL, 0xff0000)
     CutebotPro.trolley_steering(CutebotProTurn.LEFT_IN_PLACE, 95)
     CutebotPro.turn_off_all_headlights()
 
+# Turning right
 def turnRight():
     CutebotPro.color_light(CutebotProRGBLight.RGBR, 0xff0000)
     CutebotPro.trolley_steering(CutebotProTurn.RIGHT_IN_PLACE, 95)
     CutebotPro.turn_off_all_headlights()
 
+# Moving forwards
 def moveForward():
     '''
     The bot moves forward by moving relative to the gridlines in order to
@@ -177,9 +181,9 @@ def navigateMaze(distanceThreshold, magnetThreshold):
     for i in range(len(exitMoves)):
         if exitMoves[i] == 1:
             music.play(music.tone_playable(Note.C, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-        if exitMoves[i] == 2:
+        elif exitMoves[i] == 2:
             music.play(music.tone_playable(Note.E, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
-        if exitMoves[i] == 3:
+        elif exitMoves[i] == 3:
             music.play(music.tone_playable(Note.G, music.beat(BeatFraction.WHOLE)), music.PlaybackMode.UNTIL_DONE)
         music.rest(music.beat(BeatFraction.HALF))
 
@@ -215,7 +219,6 @@ def on_button_pressed_a():
     """)
     basic.pause(500)
     basic.clear_screen()
-    CutebotPro.color_light(CutebotProRGBLight.RGBA, 0x00ff00)
 
 # Button B Pressed
 def on_button_pressed_b():

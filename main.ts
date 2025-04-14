@@ -1,7 +1,9 @@
 //  Set Group for Radio Communications
 radio.setGroup(8)
 music.setTempo(200)
+//  speed of audio representation of moves
 //  Basic Functions for Movement
+//  Check for wall
 function isWall(distanceThreshold: number) {
     //  If too close to wall, back up slightly
     if (CutebotPro.ultrasonic(SonarUnit.Centimeters) < 5) {
@@ -12,18 +14,21 @@ function isWall(distanceThreshold: number) {
     return CutebotPro.ultrasonic(SonarUnit.Centimeters) < distanceThreshold
 }
 
+//  Turning left
 function turnLeft() {
     CutebotPro.colorLight(CutebotProRGBLight.RGBL, 0xff0000)
     CutebotPro.trolleySteering(CutebotProTurn.LeftInPlace, 95)
     CutebotPro.turnOffAllHeadlights()
 }
 
+//  Turning right
 function turnRight() {
     CutebotPro.colorLight(CutebotProRGBLight.RGBR, 0xff0000)
     CutebotPro.trolleySteering(CutebotProTurn.RightInPlace, 95)
     CutebotPro.turnOffAllHeadlights()
 }
 
+//  Moving forwards
 function moveForward() {
     /** 
     The bot moves forward by moving relative to the gridlines in order to
@@ -215,13 +220,9 @@ function navigateMaze(distanceThreshold: number, magnetThreshold: number) {
     for (i = 0; i < exitMoves.length; i++) {
         if (exitMoves[i] == 1) {
             music.play(music.tonePlayable(Note.C, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
-        }
-        
-        if (exitMoves[i] == 2) {
+        } else if (exitMoves[i] == 2) {
             music.play(music.tonePlayable(Note.E, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
-        }
-        
-        if (exitMoves[i] == 3) {
+        } else if (exitMoves[i] == 3) {
             music.play(music.tonePlayable(Note.G, music.beat(BeatFraction.Whole)), music.PlaybackMode.UntilDone)
         }
         
@@ -267,7 +268,6 @@ input.onButtonPressed(Button.A, function on_button_pressed_a() {
     `)
     basic.pause(500)
     basic.clearScreen()
-    CutebotPro.colorLight(CutebotProRGBLight.RGBA, 0x00ff00)
 })
 input.onButtonPressed(Button.B, function on_button_pressed_b() {
     basic.showLeds(`
